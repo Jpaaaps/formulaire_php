@@ -1,13 +1,67 @@
 <?php
 
-	$firstname = $name = $email = $phone = $message = "";
+	$firstname = $lastname = $email = $phone = $message = "";
+	$firstnameError = $lastnameError = $emailError = $phoneError = $messageError = "";
+	$isSuccess = false;
+	$emailTo = "jpgerard87@gmail.com";
 
 	if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$firstname = verifyInput($_POST["firstname"]);
-		$name = verifyInput($_POST["name"]);
+		$lastname = verifyInput($_POST["lastname"]);
 		$email = verifyInput($_POST["email"]);
 		$phone = verifyInput($_POST["phone"]);
 		$message = verifyInput($_POST["message"]);
+		$isSuccess = true;
+		$emailText = "";
+
+		if(empty($firstname)){
+			$firstnameError = "Comment t'appeles-tu?";
+			$isSuccess = false;
+		} else {
+			$emailText .= "Firstname: $firstname\n";
+		}
+
+		if(empty($lastname)){
+			$lastnameError = "J'en ai besoin également!";
+			$isSuccess = false;
+		} else {
+			$emailText .= "Name: $lastname\n";
+		}
+
+		if (!isEmail($email)){
+			$emailError = "Ce n'est pas vraiment une adresse mail...";
+			$isSuccess = false;
+		} else {
+			$emailText .= "Email: $email\n";
+		}
+
+		if (!isPhone($phone)){
+			$phoneError = "Je n'ai besoin que de chiffres et/ou espaces";
+			$isSuccess = false;
+		} else {
+			$emailText .= "Phone number: $phone\n";
+		}
+
+		if (empty($message)){
+			$messageError = "Que voulais-tu me dire?";
+			$isSuccess = false;
+		} else {
+			$emailText .= "Message: $message\n";
+		}
+
+		if ($isSuccess) {
+			$headers = "From: $firstname $lastname <$email>\r\nReply-To: $email";
+			mail($emailTo, "Un message de votre site", $emailText, $headers);
+			$firstname = $lastname = $email = $phone = $message = "";
+		}
+	}
+
+	function isEmail($var) {
+		return filter_var($var, FILTER_VALIDATE_EMAIL);
+	}
+
+	function isPhone($var) {
+		return preg_match("/^[0-9 ]*$/", $var);
 	}
 
 	function verifyInput($var) {
@@ -41,43 +95,51 @@
 				<h2>Contactez-moi</h2>
 			</div>
 			<div class="row">
-				<div class="col-lg-8 offset-lg-2">
+				<div class="col-lg-10 offset-lg-1">
 
-					<form  id="contact-form" role="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+					<form id="contact-form" method="post" role="form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
 						<div class="row">
+
 							<div class="col-md-6">
 								<label for="firstname">Prénom<span class="blue"> *</span></label>
 								<input type="text" id="firstname" name="firstname" class="form-control" placeholder="Votre prénom" value="<?php echo $firstname; ?>">
-								<p class="comments">Message d'erreur</p>
+								<p class="comments"><?php echo $firstnameError; ?></p>
 							</div>
+
 							<div class="col-md-6">
 								<label for="lastname">Nom<span class="blue"> *</span></label>
-								<input type="text" id="lastname" name="lastname" class="form-control" placeholder="Votre Nom" value="<?php echo $name; ?>">
-								<p class="comments">Message d'erreur</p>
+								<input type="text" id="lastname" name="lastname" class="form-control" placeholder="Votre Nom" value="<?php echo $lastname; ?>">
+								<p class="comments"><?php echo $lastnameError; ?></p>
 							</div>
+
 							<div class="col-md-6">
 								<label for="email">Email<span class="blue"> *</span></label>
 								<input type="email" id="email" name="email" class="form-control" placeholder="Votre email" value="<?php echo $email; ?>">
-								<p class="comments">Message d'erreur</p>
+								<p class="comments"><?php echo $emailError; ?></p>
 							</div>
+
 							<div class="col-md-6">
 								<label for="phone">Téléphone</label>
 								<input type="tel" id="phone" name="phone" class="form-control" placeholder="Votre numéro de téléphone" value="<?php echo $phone; ?>">
-								<p class="comments">Message d'erreur</p>
+								<p class="comments"><?php echo $phoneError; ?></p>
 							</div>
+
 							<div class="col-md-12">
 								<label for="message">Message<span class="blue"> *</span></label>
-								<textarea name="message" id="message" class="form-control" placeholder="Votre message" cols="30" rows="4" value="<?php echo $message; ?>"></textarea>
-								<p class="comments">Message d'erreur</p>
+								<textarea name="message" id="message" class="form-control" placeholder="Votre message" cols="30" rows="3" value="<?php echo $message; ?>"></textarea>
+								<p class="comments"><?php echo $messageError; ?></p>
 							</div>
+
 							<div class="col-md-12">
 								<p class="blue"><strong>* Ces informations sont requises</strong></p>
 							</div>
+
 							<div class="col-md-12">
 								<input type="submit" class="button1" value="envoyer">
 							</div>
+
 						</div>
-						<p class="thank-you">Votre message a bien été envoyé!</p>
+						<p class="thank-you" style="display:<?php if($isSuccess) echo 'block'; else echo 'none'; ?>">Votre message a bien été envoyé!</p>
 					</form>
 					
 				</div>
