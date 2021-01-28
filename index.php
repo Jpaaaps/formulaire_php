@@ -113,7 +113,7 @@
 
               <div class="col-md-6">
                 <label for="email">Email<span class="blue"> *</span></label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Votre email" value="<<?= $_POST["email"];?>">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Votre email" value="<?= $_POST["email"];?>">
                 <p class="comments"><?php echo $emailError; ?></p>
               </div>
 
