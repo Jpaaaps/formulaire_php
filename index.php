@@ -51,7 +51,7 @@
 
     if ($isSuccess) {
       $headers = "From: $firstname $lastname <$email>\r\nReply-To: $email";
-      mail($to, "Un message de votre site", $emailText, $headers);
+      mail("jpgerard87@gmail.com", "Un message de votre site", $emailText, $headers);
       $firstname = $lastname = $email = $phone = $message = "";
     }
   }
